@@ -1,0 +1,63 @@
+#!/usr/bin/env python
+#
+# str2hex - convert a string-type to hex
+# Author: Zex (top_zlynch@yahoo.com)
+# 
+
+import sys
+
+printline = sys.stdout.write
+
+DEFAULT_LINESPAN = 10
+
+def fillwith(block, number):
+  for i in range(number):
+		printline(block)
+
+def do_string2hex(strarg, linespan):
+	lsp = 1
+	printed = ''
+	for c in strarg:
+		printline(hex(ord(c))[2:] + ' ')
+		lsp += 1
+		printed += c
+		if lsp > linespan :
+			printline('| ' + printed + '\n')
+			if c == strarg[-1]: break
+			lsp = 1
+			printed = ''
+	fillwith('.. ', linespan - lsp + 1)
+	lsp = linespan
+	printline('| ' + printed + '\n')
+
+def combine_string_arg(strlist):
+	ret = ''
+	for s in strlist:
+		if s.startswith('--'): continue
+		ret += s
+		if s is strlist[-1]: continue
+		ret += ' '
+	return ret
+
+def string2hex(linespan):
+	do_string2hex(combine_string_arg(sys.argv[1:]), linespan)
+
+if __name__ == '__main__':
+	strargv = str(sys.argv)
+	linespan = DEFAULT_LINESPAN
+	sp = ''
+	if '--linespan' in strargv:
+		nsp = strargv.index('--linespan') + 10
+		if '=' != strargv[nsp]:
+			print 'string2hex: line span number is needed'
+			exit()
+		nsp += 1
+		for c in strargv[nsp:]:
+			if c == "'": break
+			sp += c
+		if not sp:
+			print 'string2hex: line span number is needed'
+			exit()
+		linespan = int(sp)
+	string2hex(linespan)
+
